@@ -1,0 +1,64 @@
+For this vairation of the monkey problem, I added a minor change from the example given in class. I was able to keep all of the same Semaphore objects as well as the money_count variable. Below I will walk through my logic for the Wait and Done functions.
+
+WaitUntilSafe()
+Begin by locking the critical section using the mutex associated with the direction the monkey is moving.
+Increment the amount on monkeys crossing in the dir direction.
+If it is the first monkey of the caravan, lock the dirmtx so that only monkeys traveling the same direction can cross.
+Release the critical section lock.
+Decrease the remaining capacity semaphore for each pound the crossing moneky weighs. This is the primary change to the given example in class.
+
+DoneWithCrossing()
+Begin by locking the critical section using the mutex associated with the direction the monkey is moving.
+Decrement the amount on monkeys crossing in the dir direction.
+If it is the last monkey of the caravan, unlock the dirmtx so that monkeys traveling the other direction can now cross.
+Release the critical section lock.
+Increment the remaining capacity semaphore for each pound the crossing moneky weighs. This is the primary change to the given example in class.
+
+Main()
+Creates 10 monkey threads of various weights and directions and runs then concurrently. Note that this implementation will reorder the monkeys from the original thread creation order so that any monkey will cross the rope if it does not exceed the rope's capacity (and follows direction of the caravan) EVEN IF it is not the next monkey in line.
+
+Below are a few examples of running the program. Depending on the scheduling of the threads, the first monkey to cross may differ which therefore causes the order in which the remaining monkeys cross may also differ. At all points however, the rope never exceeds the example capacity of 10lbs. Finally, note the starvation problem that occurs with the direction. Once a caravan on monkeys begins in a single direction, all monkey threads of the same direction will cross before switching directions so that the remaining monkey threads may cross the other way.
+
+Example 1:
+Monkey [id=0, wt=7, dir=0] is ON the rope
+Monkey [id=0, wt=7, dir=0] is OFF the rope
+Monkey [id=1, wt=5, dir=0] is ON the rope
+Monkey [id=9, wt=2, dir=0] is ON the rope
+Monkey [id=3, wt=2, dir=0] is ON the rope
+Monkey [id=3, wt=2, dir=0] is OFF the rope
+Monkey [id=7, wt=2, dir=0] is ON the rope
+Monkey [id=1, wt=5, dir=0] is OFF the rope
+Monkey [id=2, wt=2, dir=0] is ON the rope
+Monkey [id=2, wt=2, dir=0] is OFF the rope
+Monkey [id=8, wt=2, dir=0] is ON the rope
+Monkey [id=9, wt=2, dir=0] is OFF the rope
+Monkey [id=8, wt=2, dir=0] is OFF the rope
+Monkey [id=7, wt=2, dir=0] is OFF the rope
+Monkey [id=4, wt=6, dir=1] is ON the rope
+Monkey [id=4, wt=6, dir=1] is OFF the rope
+Monkey [id=5, wt=6, dir=1] is ON the rope
+Monkey [id=5, wt=6, dir=1] is OFF the rope
+Monkey [id=6, wt=6, dir=1] is ON the rope
+Monkey [id=6, wt=6, dir=1] is OFF the rope
+
+Example 2:
+Monkey [id=0, wt=7, dir=0] is ON the rope
+Monkey [id=2, wt=2, dir=0] is ON the rope
+Monkey [id=2, wt=2, dir=0] is OFF the rope
+Monkey [id=8, wt=2, dir=0] is ON the rope
+Monkey [id=0, wt=7, dir=0] is OFF the rope
+Monkey [id=9, wt=2, dir=0] is ON the rope
+Monkey [id=3, wt=2, dir=0] is ON the rope
+Monkey [id=9, wt=2, dir=0] is OFF the rope
+Monkey [id=1, wt=5, dir=0] is ON the rope
+Monkey [id=1, wt=5, dir=0] is OFF the rope
+Monkey [id=7, wt=2, dir=0] is ON the rope
+Monkey [id=8, wt=2, dir=0] is OFF the rope
+Monkey [id=7, wt=2, dir=0] is OFF the rope
+Monkey [id=3, wt=2, dir=0] is OFF the rope
+Monkey [id=5, wt=6, dir=1] is ON the rope
+Monkey [id=5, wt=6, dir=1] is OFF the rope
+Monkey [id=6, wt=6, dir=1] is ON the rope
+Monkey [id=6, wt=6, dir=1] is OFF the rope
+Monkey [id=4, wt=6, dir=1] is ON the rope
+Monkey [id=4, wt=6, dir=1] is OFF the rope
